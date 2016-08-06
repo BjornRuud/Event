@@ -12,30 +12,43 @@ public class Event<T> {
     public typealias EventHandler = (T) -> Void
 
     var eventHandlers = [EventHandlerWrapper<T>]()
+    let accessQueue = DispatchQueue(label: "Event.accessQueue")
 
     public func publish(_ data: T) {
         clean()
-        for handler in eventHandlers {
-            handler.invoke(data: data)
+        accessQueue.sync {
+            for handler in eventHandlers {
+                handler.invoke(data: data)
+            }
         }
     }
 
     public func subscribe(_ target: AnyObject, handler: EventHandler) -> Disposable {
         let wrapper = EventHandlerWrapper(target: target, handler: handler)
-        eventHandlers.append(wrapper)
+        addEventHandler(wrapper)
         return wrapper
     }
 
     public func unsubscribe(_ target: AnyObject) {
-        eventHandlers = eventHandlers.filter { $0.target != nil && $0.target !== target }
+        accessQueue.sync {
+            eventHandlers = eventHandlers.filter { $0.target != nil && $0.target !== target }
+        }
     }
 
     func clean() {
-        eventHandlers = eventHandlers.filter { $0.target != nil }
+        accessQueue.sync {
+            eventHandlers = eventHandlers.filter { $0.target != nil }
+        }
+    }
+
+    func addEventHandler(_ handler: EventHandlerWrapper<T>) {
+        accessQueue.sync {
+            eventHandlers.append(handler)
+        }
     }
 }
 
-class EventHandlerWrapper<T> {
+final class EventHandlerWrapper<T> {
     weak var target: AnyObject?
     var handler: Event<T>.EventHandler?
 
