@@ -23,52 +23,93 @@ class EventTests: XCTestCase {
 
     func testEvent() {
         let event = Event<Int>()
-        var eventValue = 0
-        _ = event.subscribe(self) { eventValue = $0 }
+        let expect = expectation(description: "Value not set.")
+        event.subscribe(self) {
+            if $0 == 42 {
+                expect.fulfill()
+            }
+        }
         event.publish(42)
-        XCTAssertTrue(eventValue == 42)
+        waitForExpectations(timeout: 1, handler: nil)
     }
 
     func testPublishTuple() {
         let event = Event<(oldValue: Int, newValue: Int)>()
-        var values = (0, 0)
-        _ = event.subscribe(self) { values = $0 }
+        let expect = expectation(description: "Value not set.")
+        event.subscribe(self) {
+            if ($0, $1) == (1, 2) {
+                expect.fulfill()
+            }
+        }
         event.publish((1, 2))
-        XCTAssertTrue(values == (1, 2))
+        waitForExpectations(timeout: 1, handler: nil)
     }
 
     func testSubscribe() {
         let event = Event<Int>()
-        _ = event.subscribe(self) { _ in return }
+        event.subscribe(self) { _ in return }
         XCTAssertTrue(event.eventHandlers.contains { $0.target === self })
     }
 
     func testUnsubscribe() {
         let event = Event<Int>()
-        _ = event.subscribe(self) { _ in return }
+        event.subscribe(self) { _ in return }
         event.unsubscribe(self)
         XCTAssertFalse(event.eventHandlers.contains { $0.target === self })
     }
 
-    func testDispose() {
+    func testDefaultQueue() {
         let event = Event<Int>()
-        let disposable = event.subscribe(self) { _ in return }
-        disposable.dispose()
-        XCTAssertFalse(event.eventHandlers.contains { $0.target === self })
-    }
-
-    func testCustomQueue() {
-        let event = Event<Int>()
-        let eventQueue = DispatchQueue(label: "testCustomQueue")
-        eventQueue.setSpecific(key: DispatchSpecificKey<Int>(), value: 1)
-        let expect = self.expectation(description: "Not expected dispatch queue.")
-        _ = event.subscribe(self, queue: eventQueue) { _ in
-            let value = DispatchQueue.getSpecific(key: DispatchSpecificKey<Int>())
-            if value == 1 {
+        let currentQueue = OperationQueue.current
+        let expect = self.expectation(description: "Not current queue.")
+        event.subscribe(self) { _ in
+            let queue = OperationQueue.current
+            if currentQueue === queue {
                 expect.fulfill()
             }
         }
         event.publish(42)
-        self.waitForExpectations(timeout: 1, handler: nil)
+        waitForExpectations(timeout: 1, handler: nil)
+    }
+
+    func testCustomQueue() {
+        let event = Event<Int>()
+        let customQueue = OperationQueue()
+        let expect = self.expectation(description: "Not custom queue.")
+        event.subscribe(self, queue: customQueue) { _ in
+            let queue = OperationQueue.current
+            if customQueue === queue {
+                expect.fulfill()
+            }
+        }
+        event.publish(42)
+        waitForExpectations(timeout: 1, handler: nil)
+    }
+
+    func testPropertyEvent() {
+        class Foo {
+            let valueChanged = Event<(oldValue: Int, newValue: Int)>()
+
+            var value = 0 {
+                didSet {
+                    valueChanged.publish((oldValue: oldValue, newValue: value))
+                }
+            }
+        }
+
+        class Bar {}
+
+        let foo = Foo()
+        let bar = Bar()
+
+        let expect = expectation(description: "Value not set.")
+        foo.valueChanged.subscribe(bar) {
+            oldValue, newValue in
+            if oldValue == 0 && newValue == 42 {
+                expect.fulfill()
+            }
+        }
+        foo.value = 42
+        waitForExpectations(timeout: 1, handler: nil)
     }
 }

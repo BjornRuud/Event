@@ -15,29 +15,41 @@ public class Event<T> {
     let accessQueue = DispatchQueue(label: "Event.accessQueue")
 
     public func publish(_ data: T) {
-        clean()
+        let currentQueue = OperationQueue.current ?? OperationQueue.main
         accessQueue.sync {
-            for handler in eventHandlers {
-                handler.invoke(data: data)
+            clean()
+            for wrapper in eventHandlers {
+                let queue = wrapper.queue ?? currentQueue
+                queue.addOperation {
+                    wrapper.handler?(data)
+                }
             }
+
         }
     }
 
-    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: EventHandler) -> Disposable {
+    public func subscribe(_ target: AnyObject, queue: OperationQueue? = nil, handler: EventHandler) {
         let wrapper = EventHandlerWrapper(target: target, queue: queue, handler: handler)
         addEventHandler(wrapper)
-        return wrapper
     }
 
     public func unsubscribe(_ target: AnyObject) {
         accessQueue.sync {
-            eventHandlers = eventHandlers.filter { $0.target != nil && $0.target !== target }
+            clean(target: target)
         }
     }
 
-    func clean() {
-        accessQueue.sync {
-            eventHandlers = eventHandlers.filter { $0.target != nil }
+    func clean(target: AnyObject? = nil) {
+        eventHandlers = eventHandlers.filter {
+            if $0.target == nil {
+                // Handler has been marked for disposal
+                return false
+            }
+            else if target != nil && $0.target === target {
+                // Supplied target should be removed
+                return false
+            }
+            return true
         }
     }
 
@@ -50,40 +62,12 @@ public class Event<T> {
 
 final class EventHandlerWrapper<T> {
     weak var target: AnyObject?
-    var queue: DispatchQueue?
+    var queue: OperationQueue?
     var handler: Event<T>.EventHandler?
 
-    init(target: AnyObject, queue: DispatchQueue? = nil, handler: Event<T>.EventHandler) {
+    init(target: AnyObject, queue: OperationQueue? = nil, handler: Event<T>.EventHandler) {
         self.target = target
         self.queue = queue
         self.handler = handler
-    }
-
-    func invoke(data: T) {
-        guard target != nil else {
-            dispose()
-            return
-        }
-        if let queue = queue {
-            queue.async {
-                self.handler?(data)
-            }
-        } else {
-            handler?(data)
-        }
-    }
-}
-
-public protocol Disposable {
-    func dispose()
-}
-
-extension EventHandlerWrapper: Disposable {
-    func dispose() {
-        // Disposing releases held resources but doesn't actually remove the
-        // handler wrapper from the handler list until next clean.
-        target = nil
-        queue = nil
-        handler = nil
     }
 }
