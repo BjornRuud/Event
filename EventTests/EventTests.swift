@@ -57,4 +57,18 @@ class EventTests: XCTestCase {
         XCTAssertFalse(event.eventHandlers.contains { $0.target === self })
     }
 
+    func testCustomQueue() {
+        let event = Event<Int>()
+        let eventQueue = DispatchQueue(label: "testCustomQueue")
+        eventQueue.setSpecific(key: DispatchSpecificKey<Int>(), value: 1)
+        let expect = self.expectation(description: "Not expected dispatch queue.")
+        _ = event.subscribe(self, queue: eventQueue) { _ in
+            let value = DispatchQueue.getSpecific(key: DispatchSpecificKey<Int>())
+            if value == 1 {
+                expect.fulfill()
+            }
+        }
+        event.publish(42)
+        self.waitForExpectations(timeout: 1, handler: nil)
+    }
 }

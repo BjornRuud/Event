@@ -23,8 +23,8 @@ public class Event<T> {
         }
     }
 
-    public func subscribe(_ target: AnyObject, handler: EventHandler) -> Disposable {
-        let wrapper = EventHandlerWrapper(target: target, handler: handler)
+    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: EventHandler) -> Disposable {
+        let wrapper = EventHandlerWrapper(target: target, queue: queue, handler: handler)
         addEventHandler(wrapper)
         return wrapper
     }
@@ -50,10 +50,12 @@ public class Event<T> {
 
 final class EventHandlerWrapper<T> {
     weak var target: AnyObject?
+    var queue: DispatchQueue?
     var handler: Event<T>.EventHandler?
 
-    init(target: AnyObject, handler: Event<T>.EventHandler) {
+    init(target: AnyObject, queue: DispatchQueue? = nil, handler: Event<T>.EventHandler) {
         self.target = target
+        self.queue = queue
         self.handler = handler
     }
 
@@ -62,7 +64,13 @@ final class EventHandlerWrapper<T> {
             dispose()
             return
         }
-        handler?(data)
+        if let queue = queue {
+            queue.async {
+                self.handler?(data)
+            }
+        } else {
+            handler?(data)
+        }
     }
 }
 
@@ -75,6 +83,7 @@ extension EventHandlerWrapper: Disposable {
         // Disposing releases held resources but doesn't actually remove the
         // handler wrapper from the handler list until next clean.
         target = nil
+        queue = nil
         handler = nil
     }
 }
