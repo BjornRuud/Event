@@ -2,7 +2,7 @@
 
 Swift currently lacks an observation mechanism like KVO. KVO can still be used if you make sure your classes use the Objective-C runtime, but that's not very "Swifty". This project is an implementation of the Event pattern, similar to what C# and other languages has. Events can also replace NotificationCenter for app messages (but not system messages).
 
-## Usage
+## Event
 
 Events are defined by the class `Event<T>`. The generic type is the type of the data you want to publish for this event. You then subscribe to the event and provide a handler for doing something with the data.
 
@@ -29,4 +29,22 @@ foo.valueChanged.subscribe(bar) {
     print("Value changed from \(oldValue) to \(newValue)")
 }
 foo.value = 42
+```
+
+## Observable
+
+The `Observable` class uses `Event` to provide a convenient way to observe value changes. You can create it as a property and then use the `value` property on the `Observable` to make value changes.
+
+```swift
+class Foo {
+    let bar = Observable<Int>(initialValue: 0)
+}
+
+let foo = Foo()
+let ob = SomeClass()
+foo.bar.add(observer: ob) {
+    oldValue, newValue in
+    // Do stuff
+}
+foo.bar.value = 42
 ```
