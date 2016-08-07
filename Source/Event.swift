@@ -24,7 +24,6 @@ public class Event<T> {
                     wrapper.handler?(data)
                 }
             }
-
         }
     }
 

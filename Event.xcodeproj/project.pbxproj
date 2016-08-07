@@ -15,6 +15,9 @@
 		8EAA49091D562D490078C013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EAA49081D562D490078C013 /* Assets.xcassets */; };
 		8EAA490C1D562D490078C013 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EAA490A1D562D490078C013 /* LaunchScreen.storyboard */; };
 		8EAA49131D562D9B0078C013 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9EA9331D560BBB007C79BD /* Event.swift */; };
+		8EAA49151D57634A0078C013 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA49141D57634A0078C013 /* Observable.swift */; };
+		8EAA49161D57634A0078C013 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA49141D57634A0078C013 /* Observable.swift */; };
+		8EAA49191D5781E30078C013 /* ObservableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA49171D5781E30078C013 /* ObservableTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +42,8 @@
 		8EAA49081D562D490078C013 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8EAA490B1D562D490078C013 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8EAA490D1D562D490078C013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8EAA49141D57634A0078C013 /* Observable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Observable.swift; path = Source/Observable.swift; sourceTree = "<group>"; };
+		8EAA49171D5781E30078C013 /* ObservableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				8E9EA9271D560B30007C79BD /* EventTests.swift */,
+				8EAA49171D5781E30078C013 /* ObservableTests.swift */,
 				8E9EA9291D560B30007C79BD /* Info.plist */,
 			);
 			path = EventTests;
@@ -91,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				8E9EA9331D560BBB007C79BD /* Event.swift */,
+				8EAA49141D57634A0078C013 /* Observable.swift */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -213,7 +220,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8EAA49191D5781E30078C013 /* ObservableTests.swift in Sources */,
 				8E9EA9351D5610B6007C79BD /* Event.swift in Sources */,
+				8EAA49161D57634A0078C013 /* Observable.swift in Sources */,
 				8E9EA9281D560B30007C79BD /* EventTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -222,6 +231,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8EAA49151D57634A0078C013 /* Observable.swift in Sources */,
 				8EAA49041D562D490078C013 /* ViewController.swift in Sources */,
 				8EAA49131D562D9B0078C013 /* Event.swift in Sources */,
 				8EAA49021D562D490078C013 /* AppDelegate.swift in Sources */,
