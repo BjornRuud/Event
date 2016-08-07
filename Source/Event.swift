@@ -45,7 +45,7 @@ public class Event<T> {
                 // Handler has been marked for disposal
                 return false
             }
-            else if target != nil && $0.target === target {
+            else if $0.target === target {
                 // Supplied target should be removed
                 return false
             }
