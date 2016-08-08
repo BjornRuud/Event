@@ -7,9 +7,8 @@
 //
 
 import XCTest
-@testable import EventDemo
 
-class ObservableTests: XCTestCase {
+class PropertyTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
@@ -21,9 +20,9 @@ class ObservableTests: XCTestCase {
         super.tearDown()
     }
 
-    func testObservable() {
+    func testProperty() {
         class Foo {
-            let bar = Observable<Int>(initialValue: 0)
+            let bar = Property<Int>(0)
         }
 
         let expect = expectation(description: "Value not changed")

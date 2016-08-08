@@ -12,28 +12,31 @@ public class Event<T> {
     public typealias EventHandler = (T) -> Void
 
     var eventHandlers = [EventHandlerWrapper<T>]()
-    let accessQueue = DispatchQueue(label: "Event.accessQueue")
+    let lock = NSLock()
 
     public func publish(_ data: T) {
-        let currentQueue = OperationQueue.current ?? OperationQueue.main
-        accessQueue.sync {
+        lock.atomic {
             clean()
             for wrapper in eventHandlers {
-                let queue = wrapper.queue ?? currentQueue
-                queue.addOperation {
+                if let queue = wrapper.queue {
+                    queue.async {
+                        wrapper.handler?(data)
+                    }
+                }
+                else {
                     wrapper.handler?(data)
                 }
             }
         }
     }
 
-    public func subscribe(_ target: AnyObject, queue: OperationQueue? = nil, handler: EventHandler) {
+    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: EventHandler) {
         let wrapper = EventHandlerWrapper(target: target, queue: queue, handler: handler)
         addEventHandler(wrapper)
     }
 
     public func unsubscribe(_ target: AnyObject) {
-        accessQueue.sync {
+        lock.atomic {
             clean(target: target)
         }
     }
@@ -53,7 +56,7 @@ public class Event<T> {
     }
 
     func addEventHandler(_ handler: EventHandlerWrapper<T>) {
-        accessQueue.sync {
+        lock.atomic {
             eventHandlers.append(handler)
         }
     }
@@ -61,10 +64,10 @@ public class Event<T> {
 
 final class EventHandlerWrapper<T> {
     weak var target: AnyObject?
-    var queue: OperationQueue?
+    var queue: DispatchQueue?
     var handler: Event<T>.EventHandler?
 
-    init(target: AnyObject, queue: OperationQueue? = nil, handler: Event<T>.EventHandler) {
+    init(target: AnyObject, queue: DispatchQueue? = nil, handler: Event<T>.EventHandler) {
         self.target = target
         self.queue = queue
         self.handler = handler

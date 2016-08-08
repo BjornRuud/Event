@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Observable<T> {
+public class Property<T> {
     public var value: T {
         didSet {
             valueChanged.publish((oldValue: oldValue, newValue: value))
@@ -18,11 +18,11 @@ public class Observable<T> {
     public typealias ValueChangeType = (oldValue: T, newValue: T)
     let valueChanged = Event<ValueChangeType>()
 
-    public init(initialValue: T) {
+    public init(_ initialValue: T) {
         self.value = initialValue
     }
 
-    public func add(observer: AnyObject, queue: OperationQueue? = nil, handler: Event<ValueChangeType>.EventHandler) {
+    public func add(observer: AnyObject, queue: DispatchQueue? = nil, handler: Event<ValueChangeType>.EventHandler) {
         valueChanged.subscribe(observer, queue: queue, handler: handler)
     }
 

@@ -7,7 +7,6 @@
 //
 
 import XCTest
-@testable import EventDemo
 
 class EventTests: XCTestCase {
 
@@ -60,11 +59,10 @@ class EventTests: XCTestCase {
 
     func testDefaultQueue() {
         let event = Event<Int>()
-        let currentQueue = OperationQueue.current
+        Thread.current.threadDictionary["ctx"] = "test"
         let expect = self.expectation(description: "Not current queue.")
         event.subscribe(self) { _ in
-            let queue = OperationQueue.current
-            if currentQueue === queue {
+            if let ctx = Thread.current.threadDictionary["ctx"] as? String, ctx == "test" {
                 expect.fulfill()
             }
         }
@@ -74,13 +72,11 @@ class EventTests: XCTestCase {
 
     func testCustomQueue() {
         let event = Event<Int>()
-        let customQueue = OperationQueue()
+        let queue = DispatchQueue(label: "testQueue")
         let expect = self.expectation(description: "Not custom queue.")
-        event.subscribe(self, queue: customQueue) { _ in
-            let queue = OperationQueue.current
-            if customQueue === queue {
-                expect.fulfill()
-            }
+        event.subscribe(self, queue: queue) { _ in
+            dispatchPrecondition(condition: .onQueue(queue))
+            expect.fulfill()
         }
         event.publish(42)
         waitForExpectations(timeout: 1, handler: nil)
