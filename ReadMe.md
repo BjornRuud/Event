@@ -31,13 +31,13 @@ foo.valueChanged.subscribe(bar) {
 foo.value = 42
 ```
 
-## Observable
+## Property
 
-The `Observable` class uses `Event` to provide a convenient way to observe value changes. You can create it as a property and then use the `value` property on the `Observable` to make value changes.
+The `Property` class uses `Event` to provide a convenient way to observe value changes. You can create it as a property and then use the `value` property on the `Property` to make value changes.
 
 ```swift
 class Foo {
-    let bar = Observable<Int>(initialValue: 0)
+    let bar = Property<Int>(0)
 }
 
 let foo = Foo()
