@@ -14,6 +14,8 @@ public class Event<T> {
     var eventHandlers = [EventHandlerWrapper<T>]()
     let lock = NSLock()
 
+    public init() {}
+
     public func publish(_ data: T) {
         lock.atomic {
             clean()
