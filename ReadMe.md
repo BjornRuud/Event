@@ -1,6 +1,6 @@
 # Swift Events
 
-Swift currently lacks an observation mechanism like KVO. KVO can still be used if you make sure your classes use the Objective-C runtime, but that's not very "Swifty". This project is an implementation of the Event pattern, similar to what C# and other languages has. Events can also replace NotificationCenter for app messages (but not system messages).
+Swift currently lacks an observation mechanism like KVO. KVO can still be used if you make sure your classes use the Objective-C runtime, but that's not very "swifty". This project is an implementation of the observer pattern, which can also replace NotificationCenter for general event messaging in many use cases.
 
 ## Event
 
