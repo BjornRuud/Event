@@ -10,7 +10,7 @@ import Foundation
 
 /// Convenience method to execute a closure atomically
 public extension NSLock {
-    public func atomic(_ closure: @noescape () -> Void) {
+    public func atomic(_ closure: () -> Void) {
         lock()
         closure()
         unlock()
