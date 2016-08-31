@@ -8,6 +8,10 @@
 
 import Foundation
 
+/// Convenience protocol used when an event needs to support different types.
+public protocol EventType {
+}
+
 public class Event<T> {
     public typealias EventHandler = (T) -> Void
 
