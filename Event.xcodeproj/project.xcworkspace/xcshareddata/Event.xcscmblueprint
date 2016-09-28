@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "AD924FEAFC516FED5939928C38609B5DF3704794",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "AD924FEAFC516FED5939928C38609B5DF3704794" : 9223372036854775807,
+    "89D6E55EC4AC68774C0064D1819AAC52FCF83564" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "944B7536-B76C-4800-9A7C-4F929E72532B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "AD924FEAFC516FED5939928C38609B5DF3704794" : "Event\/",
+    "89D6E55EC4AC68774C0064D1819AAC52FCF83564" : ".."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Event",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Event.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "bitbucket.org:bjorn\/cardgame.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "89D6E55EC4AC68774C0064D1819AAC52FCF83564"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:BjornRuud\/Event.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "AD924FEAFC516FED5939928C38609B5DF3704794"
+    }
+  ]
+}

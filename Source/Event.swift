@@ -36,7 +36,7 @@ public class Event<T> {
         }
     }
 
-    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: EventHandler) {
+    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: @escaping EventHandler) {
         let wrapper = EventHandlerWrapper(target: target, queue: queue, handler: handler)
         addEventHandler(wrapper)
     }
@@ -73,7 +73,7 @@ final class EventHandlerWrapper<T> {
     var queue: DispatchQueue?
     var handler: Event<T>.EventHandler?
 
-    init(target: AnyObject, queue: DispatchQueue? = nil, handler: Event<T>.EventHandler) {
+    init(target: AnyObject, queue: DispatchQueue? = nil, handler: @escaping Event<T>.EventHandler) {
         self.target = target
         self.queue = queue
         self.handler = handler
