@@ -22,7 +22,7 @@ public class Property<T> {
         self.value = initialValue
     }
 
-    public func add(observer: AnyObject, queue: DispatchQueue? = nil, handler: Event<ValueChangeType>.EventHandler) {
+    public func add(observer: AnyObject, queue: DispatchQueue? = nil, handler: @escaping Event<ValueChangeType>.EventHandler) {
         valueChanged.subscribe(observer, queue: queue, handler: handler)
     }
 

@@ -46,15 +46,48 @@ class EventTests: XCTestCase {
 
     func testSubscribe() {
         let event = Event<Int>()
-        event.subscribe(self) { _ in return }
-        XCTAssertTrue(event.eventHandlers.contains { $0.target === self })
+        let expect = expectation(description: "No subscription.")
+        event.subscribe(self) { _ in
+            expect.fulfill()
+        }
+        event.publish(42)
+        waitForExpectations(timeout: 1, handler: nil)
+    }
+
+    func testSubscribeOnce() {
+        var eventCount = 0
+        let event = Event<Int>()
+        event.subscribeOnce(self) { _ in
+            eventCount += 1
+        }
+        event.publish(42)
+        event.publish(43)
+        let expect = expectation(description: "Not subscribed once.")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.4) {
+            if eventCount == 1 {
+                expect.fulfill()
+            }
+        }
+        waitForExpectations(timeout: 0.5, handler: nil)
     }
 
     func testUnsubscribe() {
         let event = Event<Int>()
-        event.subscribe(self) { _ in return }
+        var gotEvent = false
+        event.subscribe(self) { value in
+            gotEvent = true
+        }
         event.unsubscribe(self)
-        XCTAssertFalse(event.eventHandlers.contains { $0.target === self })
+        DispatchQueue.global(qos: .background).async {
+            event.publish(42)
+        }
+        let expect = expectation(description: "Not unsubscribed.")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.4) {
+            if !gotEvent {
+                expect.fulfill()
+            }
+        }
+        waitForExpectations(timeout: 0.5, handler: nil)
     }
 
     func testDefaultQueue() {

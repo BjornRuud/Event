@@ -11,8 +11,8 @@ import Foundation
 public class Event<T> {
     public typealias EventHandler = (T) -> Void
 
-    var eventHandlers = [EventHandlerWrapper<T>]()
-    let lock = NSLock()
+    private var eventHandlers = [EventHandlerWrapper<T>]()
+    private let lock = NSLock()
 
     public init() {}
 
@@ -28,13 +28,20 @@ public class Event<T> {
                 else {
                     wrapper.handler?(data)
                 }
+                if wrapper.once {
+                    wrapper.destroy()
+                }
             }
         }
     }
 
-    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, handler: EventHandler) {
-        let wrapper = EventHandlerWrapper(target: target, queue: queue, handler: handler)
+    public func subscribe(_ target: AnyObject, queue: DispatchQueue? = nil, once: Bool = false, handler: @escaping EventHandler) {
+        let wrapper = EventHandlerWrapper(target: target, queue: queue, once: once, handler: handler)
         addEventHandler(wrapper)
+    }
+
+    public func subscribeOnce(_ target: AnyObject, queue: DispatchQueue? = nil, handler: @escaping EventHandler) {
+        subscribe(target, queue: queue, once: true, handler: handler)
     }
 
     public func unsubscribe(_ target: AnyObject) {
@@ -43,7 +50,7 @@ public class Event<T> {
         }
     }
 
-    func clean(target: AnyObject? = nil) {
+    private func clean(target: AnyObject? = nil) {
         eventHandlers = eventHandlers.filter {
             if $0.target == nil {
                 // Handler has been marked for disposal
@@ -57,21 +64,29 @@ public class Event<T> {
         }
     }
 
-    func addEventHandler(_ handler: EventHandlerWrapper<T>) {
+    private func addEventHandler(_ handler: EventHandlerWrapper<T>) {
         lock.atomic {
             eventHandlers.append(handler)
         }
     }
 }
 
-final class EventHandlerWrapper<T> {
+fileprivate final class EventHandlerWrapper<T> {
     weak var target: AnyObject?
     var queue: DispatchQueue?
+    let once: Bool
     var handler: Event<T>.EventHandler?
 
-    init(target: AnyObject, queue: DispatchQueue? = nil, handler: Event<T>.EventHandler) {
+    init(target: AnyObject, queue: DispatchQueue? = nil, once: Bool, handler: @escaping Event<T>.EventHandler) {
         self.target = target
         self.queue = queue
+        self.once = once
         self.handler = handler
+    }
+
+    fileprivate func destroy() {
+        target = nil
+        queue = nil
+        handler = nil
     }
 }
