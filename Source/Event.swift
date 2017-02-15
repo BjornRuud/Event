@@ -25,15 +25,23 @@ public class Event<T> {
             clean()
             for wrapper in eventHandlers {
                 if let queue = wrapper.queue {
-                    queue.async {
-                        wrapper.handler?(data)
+                    queue.async { [weak self] in
+                        guard let strongSelf = self else {
+                            return
+                        }
+                        strongSelf.lock.atomic {
+                            wrapper.handler?(data)
+                            if wrapper.once {
+                                wrapper.destroy()
+                            }
+                        }
                     }
                 }
                 else {
                     wrapper.handler?(data)
-                }
-                if wrapper.once {
-                    wrapper.destroy()
+                    if wrapper.once {
+                        wrapper.destroy()
+                    }
                 }
             }
         }
